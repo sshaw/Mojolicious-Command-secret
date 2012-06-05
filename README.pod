@@ -1,0 +1,19 @@
+=pod
+
+=head1 NAME
+
+Mojolicious::Command::secret - Generate a secret() using random bytes and add it you your app
+
+=head1 DESCRIPTION
+
+  ./script/your_app secret
+  perl ./lite_app.pl secret
+
+=head1 OPTIONS
+
+  -f, --force                 Overwrite an existing secret. Defaults to 0.
+  -m, --module MODULE=method  Module & method used to generate the secret. Defaults to Crypt::URandom=urandom.
+  -s, --size   SIZE           Number of bytes to use. Defaults to 32.
+
+
+
