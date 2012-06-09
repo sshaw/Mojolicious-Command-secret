@@ -2,31 +2,34 @@
 
 =head1 NAME
 
-Mojolicious::Command::secret - Create an application secret() consisting of random bytes 
+Mojolicious::Command::secret - Create an application secret() consisting of random bytes
 
 =head1 DESCRIPTION
 
 Tired of manually creating and adding secrets? Me too! Use this command to create a secret
 and add it to your C<Mojolicous> or C<Mojolicious::Lite> application:
 
-  ./script/your_app secret
-  ./lite_app secret
+ ./script/your_app secret
+ ./lite_app secret
 
-B<This will modify the appropriate application file>, though an existing secret will not be overridden unless the C<-f> option is used. 
-If you do not want to automatically add the secret to your application use the C<mojo> command or 
+B<This will modify the appropriate application file>, though an existing secret will not be overridden unless the C<-f> option is used.
+If you do not want to automatically add the secret to your application use the C<mojo> command or
 the C<-p> option and the secret will be printed to C<STDOUT> instead:
- 
-  mojo secret
-  ./script/your_app secret -p
+
+ mojo secret
+ ./script/your_app secret -p
+
+It is assumed that your file contains UTF-8 data.
 
 =head1 OPTIONS
 
-  -f, --force                    Overwrite an existing secret. Defaults to 0.
-  -g, --generator MODULE=method  Module & method used to generate the secret. Defaults to Crypt::URandom=urandom. 
-  -p, --print      		 Print the secret, do not add it to your application.
-  -s, --size      SIZE           Number of bytes to use. Defaults to 32.
+ -f, --force                    Overwrite an existing secret. Defaults to 0.
+ -g, --generator MODULE=method  Use module & method to generate the secret. The method
+                                must accept an integer argument.
+ -p, --print                    Print the secret, do not add it to your application.
+ -s, --size      SIZE           Number of bytes to use. Defaults to 32.
 
-  Default options can be added to the MOJO_SECRET_OPTIONS environment variable.
+ Default options can be added to the MOJO_SECRET_OPTIONS environment variable.
 
 =head1 AUTHOR
 
@@ -35,4 +38,3 @@ Skye Shaw
 =head1 LICENSE
 
 This library is free software; you can redistribute it and/or modify it under the same terms as Perl itself.
-

@@ -1,4 +1,3 @@
-#package Mojolicious::Command::generate:secret;
 package Mojolicious::Command::secret;
 
 use Mojo::Base 'Mojo::Command';
@@ -14,8 +13,9 @@ usage $0 secret [OPTIONS]
 
 OPTIONS:
   -f, --force                    Overwrite an existing secret. Defaults to 0.
-  -g, --generator MODULE=method  Module & method used to generate the secret. Defaults to Crypt::URandom=urandom. 
-  -p, --print      		 Just print the secret, do not add it to your application.
+  -g, --generator MODULE=method  Use module & method to generate the secret. The method
+                                 must accept an integer argument.
+  -p, --print                    Just print the secret, do not add it to your application.
   -s, --size      SIZE           Number of bytes to use. Defaults to 32.
 
 Default options can be added to the MOJO_SECRET_OPTIONS environment variable.
@@ -32,6 +32,8 @@ sub run
                                  's|size=i'      => \$size,
                                  'p|print'       => \$print,
                                  'g|generator=s' => \$module);
+
+    say "PKPKOK $ok\n";
     return unless $ok;
 
     my $secret   = _create_secret($module, $size);
@@ -42,15 +44,15 @@ sub run
     # If we're called as `mojo` just print the secret
     my $base = join '/', (File::Spec->splitdir($path))[-2,-1];
     if($print || $base eq 'bin/mojo') {
-	say $secret;
-	return;
+        print "$secret\n";
+        return;
     }
 
-    open my $io, '+<:encoding(utf8)', $path or die "Error opening $path: $!\n";
-    my $data = do { local $/; <$io> };
+    open my $in, '<:encoding(utf8)', $path or die "Error opening $path: $!\n";
+    my $data = do { local $/; <$in> };
 
     my $created = 0;
-    if($data =~ m|\w->secret\((["'].+["'])\)|) {
+    if($data =~ m|\w->secret\((["'].*["'])\)|) { # '
         if(!$force) {
             die "Your application already has a secret (use -f to overwrite it)\n";
         }
@@ -64,28 +66,40 @@ sub run
           $data =~ s/^((\s*)\b(app)->\w+)/$2$3$code$1/m) {
         $created = 1;
     }
-    
-    if(!$created) {
-        die "Can't figure out where to insert the call to secret()\n"
-    }
-    
-    seek  $io, 0, 0 or die "Can't seek: $!\n";
-    print $io $data and close $io or die "Error writing secret to $path: $!\n";
 
-    say 'Secret created!';
+    if(!$created) {
+        die "Can't figure out where to insert the call to secret()\n";
+    }
+
+    my $out;
+    open $out, '>:encoding(utf8)', $path 
+	and print $out $data 
+	and close $out
+	or die "Error writing secret to $path: $!\n";
+
+    print "Secret created!\n";
 }
 
 sub _create_secret
 {
-    my $module = shift || 'Crypt::URandom=urandom';
+    my $module = shift;
     my $size   = shift || 32;
+    my @lookup = $module ? $module : qw|Crypt::URandom=urandom Crypt::OpenSSL::Random=random_bytes|;
 
-    my ($class, $method) = split /=/, $module, 2;
-    eval "require $class; 1" or die "Module '$class' not found\n";
+    my ($class, $method);
+    while(defined(my $mod = shift @lookup)) {
+	($class, $method) = split /=/, $mod, 2;
+	eval "require $class; 1" 
+	    and last 
+	    or @lookup
+	    or die "Module '$class' not found\n";
+    }
 
     my $secret;
     {
         no strict 'refs';
+	no warnings; 
+
         if(!exists ${"${class}::"}{$method}) {
             die "$class has no method named '$method'\n";
         }
@@ -103,31 +117,34 @@ sub _create_secret
 
 =head1 NAME
 
-Mojolicious::Command::secret - Create an application secret() consisting of random bytes 
+Mojolicious::Command::secret - Create an application secret() consisting of random bytes
 
 =head1 DESCRIPTION
 
 Tired of manually creating and adding secrets? Me too! Use this command to create a secret
 and add it to your C<Mojolicous> or C<Mojolicious::Lite> application:
 
-  ./script/your_app secret
-  ./lite_app secret
+ ./script/your_app secret
+ ./lite_app secret
 
-B<This will modify the appropriate application file>, though an existing secret will not be overridden unless the C<-f> option is used. 
-If you do not want to automatically add the secret to your application use the C<mojo> command or 
+B<This will modify the appropriate application file>, though an existing secret will not be overridden unless the C<-f> option is used.
+If you do not want to automatically add the secret to your application use the C<mojo> command or
 the C<-p> option and the secret will be printed to C<STDOUT> instead:
- 
-  mojo secret
-  ./script/your_app secret -p
+
+ mojo secret
+ ./script/your_app secret -p
+
+It is assumed that your file contains UTF-8 data.
 
 =head1 OPTIONS
 
-  -f, --force                    Overwrite an existing secret. Defaults to 0.
-  -g, --generator MODULE=method  Module & method used to generate the secret. Defaults to Crypt::URandom=urandom. 
-  -p, --print      		 Print the secret, do not add it to your application.
-  -s, --size      SIZE           Number of bytes to use. Defaults to 32.
+ -f, --force                    Overwrite an existing secret. Defaults to 0.
+ -g, --generator MODULE=method  Use module & method to generate the secret. The method
+                                must accept an integer argument.
+ -p, --print                    Print the secret, do not add it to your application.
+ -s, --size      SIZE           Number of bytes to use. Defaults to 32.
 
-  Default options can be added to the MOJO_SECRET_OPTIONS environment variable.
+ Default options can be added to the MOJO_SECRET_OPTIONS environment variable.
 
 =head1 AUTHOR
 
@@ -136,4 +153,3 @@ Skye Shaw
 =head1 LICENSE
 
 This library is free software; you can redistribute it and/or modify it under the same terms as Perl itself.
-
