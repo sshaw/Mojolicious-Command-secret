@@ -13,8 +13,9 @@ usage $0 secret [OPTIONS]
 
 OPTIONS:
   -f, --force                    Overwrite an existing secret. Defaults to 0.
-  -g, --generator MODULE=method  Use module & method to generate the secret. The method
-                                 must accept an integer argument.
+  -g, --generator MODULE=method  Module & method to generate the secret. The method must 
+				 accept an integer argument. Defaults to Crypt::URandom=urandom 
+    				 and Crypt::OpenSSL::Random=random_bytes
   -p, --print                    Just print the secret, do not add it to your application.
   -s, --size      SIZE           Number of bytes to use. Defaults to 32.
 
@@ -31,13 +32,11 @@ sub run
                                  'f|force'       => \$force,
                                  's|size=i'      => \$size,
                                  'p|print'       => \$print,
-                                 'g|generator=s' => \$module);
-
-    say "PKPKOK $ok\n";
+                                 'g|generator=s' => \$module);    
+    # TODO: Always 1
     return unless $ok;
 
     my $secret   = _create_secret($module, $size);
-    my $code     = sprintf q|->secret('%s');|, $secret;
     my $filename = $self->class_to_path(ref($self->app));
     my $path     = $filename eq 'Mojolicious/Lite.pm' ? $0 : File::Spec->catdir('lib', $filename);
 
@@ -47,6 +46,15 @@ sub run
         print "$secret\n";
         return;
     }
+
+    _insert_secret($secret, $path, $force);
+    print "Secret created!\n";
+}
+
+sub _insert_secret
+{
+    my ($secret, $path, $force) = @_;
+    my $code = sprintf q|->secret('%s');|, $secret;
 
     open my $in, '<:encoding(utf8)', $path or die "Error opening $path: $!\n";
     my $data = do { local $/; <$in> };
@@ -76,8 +84,6 @@ sub run
 	and print $out $data 
 	and close $out
 	or die "Error writing secret to $path: $!\n";
-
-    print "Secret created!\n";
 }
 
 sub _create_secret
@@ -128,27 +134,30 @@ and add it to your C<Mojolicous> or C<Mojolicious::Lite> application:
  ./lite_app secret
 
 B<This will modify the appropriate application file>, though an existing secret will not be overridden unless the C<-f> option is used.
-If you do not want to automatically add the secret to your application use the C<mojo> command or
+
+It is assumed that your file contains UTF-8 data and that you use C<$self> or C<app> to refer
+to your application instance.
+
+If you do not want to automatically add the secret to your application use the C<mojo secret> command or
 the C<-p> option and the secret will be printed to C<STDOUT> instead:
 
  mojo secret
  ./script/your_app secret -p
 
-It is assumed that your file contains UTF-8 data.
-
 =head1 OPTIONS
 
  -f, --force                    Overwrite an existing secret. Defaults to 0.
- -g, --generator MODULE=method  Use module & method to generate the secret. The method
-                                must accept an integer argument.
+ -g, --generator MODULE=method  Module & method to generate the secret. The method must 
+    				accept an integer argument. Defaults to Crypt::URandom=urandom 
+    				and Crypt::OpenSSL::Random=random_bytes
  -p, --print                    Print the secret, do not add it to your application.
  -s, --size      SIZE           Number of bytes to use. Defaults to 32.
 
- Default options can be added to the MOJO_SECRET_OPTIONS environment variable.
+Default options can be added to the C<MOJO_SECRET_OPTIONS> environment variable.
 
 =head1 AUTHOR
 
-Skye Shaw
+(c) 2012 Skye Shaw
 
 =head1 LICENSE
 
