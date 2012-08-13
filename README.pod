@@ -34,6 +34,10 @@ the C<-p> option and the secret will be printed to C<STDOUT> instead:
 
 Default options can be added to the C<MOJO_SECRET_OPTIONS> environment variable.
 
+=head1 SEE ALSO
+
+L<Crypt::URandom>, L<Crypt::OpenSSL::Random>
+
 =head1 AUTHOR
 
 (c) 2012 Skye Shaw

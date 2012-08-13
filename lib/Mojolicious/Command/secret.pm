@@ -42,7 +42,7 @@ sub run
     my $path     = $filename eq 'Mojolicious/Lite.pm' ? $0 : File::Spec->catdir('lib', $filename);
 
     # If we're called as `mojo` just print the secret
-    my $base = join '/', (File::Spec->splitdir($path))[-2,-1];
+    my $base = join '/', (File::Spec->splitdir($path))[-2,-1];   # Warning if perl ./app.pl secret 
     if($print || $base eq 'bin/mojo') {
         print "$secret\n";
         return;
@@ -155,6 +155,10 @@ the C<-p> option and the secret will be printed to C<STDOUT> instead:
  -s, --size      SIZE           Number of bytes to use. Defaults to 32.
 
 Default options can be added to the C<MOJO_SECRET_OPTIONS> environment variable.
+
+=head1 SEE ALSO
+
+L<Crypt::URandom>, L<Crypt::OpenSSL::Random>
 
 =head1 AUTHOR
 
