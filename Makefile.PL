@@ -30,6 +30,7 @@ WriteMakefile(
     LICENSE => 'perl',
     (eval { ExtUtils::MakeMaker->VERSION(6.46) } ?
       (META_MERGE  => { resources => { bugtracker => 'http://github.com/sshaw/Mojolicious-Command-secret/issues',
+                                       repository => 'http://github.com/sshaw/Mojolicious-Command-secret',
                                        homepage   => 'http://github.com/sshaw/Mojolicious-Command-secret'} }) : ())
 );
 
