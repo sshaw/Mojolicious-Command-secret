@@ -23,10 +23,10 @@ END
 
 WriteMakefile(
     NAME => 'Mojolicious::Command::secret',
-    AUTHOR => 'Skye Shaw <sshaw AT lucas.cis.temple.edu>',
+    AUTHOR => 'Skye Shaw <skye.shaw AT gmail.com>',
     VERSION_FROM => 'lib/Mojolicious/Command/secret.pm',
     ABSTRACT_FROM => 'lib/Mojolicious/Command/secret.pm',
-    PREREQ_PM => { 'Mojolicious' => 3 },
+    PREREQ_PM => { 'Mojolicious' => '4.63' },
     LICENSE => 'perl',
     (eval { ExtUtils::MakeMaker->VERSION(6.46) } ?
       (META_MERGE  => { resources => { bugtracker => 'http://github.com/sshaw/Mojolicious-Command-secret/issues',
