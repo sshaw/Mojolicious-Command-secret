@@ -1,5 +1,5 @@
 -------------------------
-2014-02-26    v0.03
+2014-03-18    v0.03
 -------------------------
 * Mojolicious >= 4.63 required
 * Changed generated code from secret('xxx') to secrets(['xxx'])

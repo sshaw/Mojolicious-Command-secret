@@ -7,7 +7,7 @@ Mojolicious::Command::secret - Create application secrets() consisting of random
 =head1 MOJOLICIOUS VERSION
 
 If your Mojolicious version is less than 4.63 then you must
-L<use version 0.02|https://metacpan.org/release/SHAW/Mojolicious-Command-secret-0.02>
+L<use version 0.02|https://github.com/sshaw/Mojolicious-Command-secret/tree/v0.02>
 of this module.
 
 =head1 DESCRIPTION

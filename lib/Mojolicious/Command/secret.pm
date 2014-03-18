@@ -8,7 +8,7 @@ use Getopt::Long qw(GetOptionsFromArray :config no_ignore_case no_auto_abbrev); 
 
 our $VERSION = '0.03';
 
-has description => "Create a application secrets() consisting of random bytes\n";
+has description => "Create application secrets() consisting of random bytes\n";
 has usage => <<USAGE;
 usage $0 secret [OPTIONS]
 
@@ -36,7 +36,6 @@ sub run
                                  's|size=i'      => \$size,
                                  'p|print'       => \$print,
                                  'g|generator=s' => \$module);
-    # TODO: Always 1
     return unless $ok;
 
     my $secrets  = _create_secrets($module, $size, $count);
