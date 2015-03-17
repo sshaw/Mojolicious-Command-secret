@@ -1,0 +1,23 @@
+# Makemaker
+^Makefile$
+^blib/
+^MakeMaker-\d
+^pm_to_blib$
+^blibdirs
+
+# Module::Build
+^Build\.bat$
+^Build$
+^_build/
+^cover_db
+
+# version control
+^\.git/
+
+# other files
+^MANIFEST.bak$
+\.tmp$
+\.old$
+^MYMETA\.yml$
+^MYMETA\.json$
+^META\.json$
