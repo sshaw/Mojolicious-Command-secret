@@ -4,7 +4,7 @@ use Mojo::Base 'Mojolicious::Command';
 use Mojo::Util 'class_to_path';
 
 use File::Spec;
-use Getopt::Long qw(GetOptionsFromArray :config no_ignore_case no_auto_abbrev);   # Match Mojo's commands
+use Getopt::Long qw(GetOptionsFromArray :config no_ignore_case no_auto_abbrev bundling); # Match Mojo's commands
 
 our $VERSION = '0.03';
 
